@@ -1,4 +1,5 @@
 ﻿using Data.Repository.Interfaces;
+using Data.Repository.Interfaces.Persistence;
 using Data.Repository.Models;
 using Domain.Helpers;
 using Domain.Services.Interfaces;
@@ -13,10 +14,12 @@ namespace Domain.Services
     public class RatesService : IRatesService
     {
         private readonly IRepository<RateModel> _repositoryRate;
+        private readonly IRepositoryRateFile _repositoryRateFile;
 
-        public RatesService(IRepository<RateModel> repositoryRate)
+        public RatesService(IRepository<RateModel> repositoryRate, IRepositoryRateFile repositoryRateFile)
         {
             _repositoryRate = repositoryRate;
+            _repositoryRateFile = repositoryRateFile;
         }
 
         public async Task<ResponseHelper<List<RateModel>>> Get()
@@ -32,7 +35,9 @@ namespace Domain.Services
                     ErrText = ""
                 };
                 response.DataH = listRate;
-                
+
+                _repositoryRateFile.Save(listRate);
+
                 return await Task.FromResult(response);
             }
             catch (Exception ex)

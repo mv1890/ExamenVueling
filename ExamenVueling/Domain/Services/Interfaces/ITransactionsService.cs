@@ -10,5 +10,6 @@ namespace Domain.Services.Interfaces
     public interface ITransactionsService
     {
         Task<ResponseHelper<List<TransactionModel>>> Get();
+        Task<ResponseHelper<TransHelper>> GetTransactionsBySku(string sku);
     }
 }

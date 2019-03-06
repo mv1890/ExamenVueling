@@ -1,4 +1,5 @@
 ﻿using Data.Repository.Interfaces;
+using Data.Repository.Interfaces.Persistence;
 using Data.Repository.Models;
 using Domain.Helpers;
 using Domain.Services.Interfaces;
@@ -14,11 +15,16 @@ namespace Domain.Services
     {
         private readonly IRepository<TransactionModel> _repositoryTransaction;
         private readonly IRepository<RateModel> _repositoryRate;
+        private readonly IRepositoryTransFile _repositoryTransFile;
+        private readonly IRepositoryRateFile _repositoryRateFile;
 
-        public TransactionsService(IRepository<RateModel> repositoryRate, IRepository<TransactionModel> repositoryTransaction)
+        public TransactionsService(IRepository<RateModel> repositoryRate, IRepository<TransactionModel> repositoryTransaction, IRepositoryRateFile repositoryRateFile,
+            IRepositoryTransFile repositoryTransFile)
         {
             _repositoryRate = repositoryRate;
             _repositoryTransaction = repositoryTransaction;
+            _repositoryRateFile = repositoryRateFile;
+            _repositoryTransFile = repositoryTransFile;
         }
 
         public async Task<ResponseHelper<List<TransactionModel>>> Get()
@@ -36,6 +42,9 @@ namespace Domain.Services
                 };
                 response.DataH = listTransaction;
 
+                _repositoryTransFile.Save(listTransaction);
+                _repositoryRateFile.Save(listRate);
+
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -44,6 +53,11 @@ namespace Domain.Services
                 response.ResponseH.ErrText = ex.Message;
                 return await Task.FromResult(response);
             }
+        }
+
+        public Task<ResponseHelper<TransHelper>> GetTransactionsBySku(string sku)
+        {
+            throw new NotImplementedException();
         }
     }
 }

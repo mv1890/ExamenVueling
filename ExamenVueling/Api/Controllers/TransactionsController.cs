@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Domain.Helpers;
+using Domain.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Domain.Helpers;
-using Domain.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
@@ -28,6 +24,26 @@ namespace Api.Controllers
         public async Task<IActionResult> Get()
         {
             var response = await _serviceTransaction.Get();
+            if (response.ResponseH.Result != ResultTypeHelper.ResultMsg.OK)
+            {
+                var message = new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent(response.ResponseH.ErrText)
+                };
+                return BadRequest(message);
+
+            }
+            else
+            {
+                return Ok(response.DataH);
+            }
+        }
+
+        [HttpGet]
+        [Route("{sku}", Name = "GetTransBySku")]
+        public async Task<IActionResult> GetTransactionsBySku(string sku)
+        {
+            var response = await _serviceTransaction.GetTransactionsBySku(sku);
             if (response.ResponseH.Result != ResultTypeHelper.ResultMsg.OK)
             {
                 var message = new HttpResponseMessage(HttpStatusCode.BadRequest)

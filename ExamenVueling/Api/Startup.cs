@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Data.Repository;
 using Data.Repository.Interfaces;
+using Data.Repository.Interfaces.Persistence;
 using Data.Repository.Models;
 using Domain.Services;
 using Domain.Services.Interfaces;
@@ -40,6 +41,10 @@ namespace Api
             //REPOS
             services.AddTransient<IRepository<TransactionModel>, RepositoryTrans>();
             services.AddTransient<IRepository<RateModel>, RepositoryRates>();
+
+            //FILES
+            services.AddTransient<IRepositoryTransFile, RepositoryTransFile>();
+            services.AddTransient<IRepositoryRateFile, RepositoryRateFile>();
 
             services.AddTransient<HttpClient>();
         }
