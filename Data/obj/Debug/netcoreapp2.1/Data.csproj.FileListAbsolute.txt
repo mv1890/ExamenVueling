@@ -1,9 +1,0 @@
-C:\Users\CTA\Documents\ExamenVueling\ExamenVueling\Data\bin\Debug\netcoreapp2.1\Data.deps.json
-C:\Users\CTA\Documents\ExamenVueling\ExamenVueling\Data\bin\Debug\netcoreapp2.1\Data.dll
-C:\Users\CTA\Documents\ExamenVueling\ExamenVueling\Data\bin\Debug\netcoreapp2.1\Data.pdb
-C:\Users\CTA\Documents\ExamenVueling\ExamenVueling\Data\obj\Debug\netcoreapp2.1\Data.csproj.CoreCompileInputs.cache
-C:\Users\CTA\Documents\ExamenVueling\ExamenVueling\Data\obj\Debug\netcoreapp2.1\Data.AssemblyInfoInputs.cache
-C:\Users\CTA\Documents\ExamenVueling\ExamenVueling\Data\obj\Debug\netcoreapp2.1\Data.AssemblyInfo.cs
-C:\Users\CTA\Documents\ExamenVueling\ExamenVueling\Data\obj\Debug\netcoreapp2.1\Data.dll
-C:\Users\CTA\Documents\ExamenVueling\ExamenVueling\Data\obj\Debug\netcoreapp2.1\Data.pdb
-C:\Users\CTA\Documents\ExamenVueling\ExamenVueling\Data\obj\Debug\netcoreapp2.1\Data.csprojAssemblyReference.cache
