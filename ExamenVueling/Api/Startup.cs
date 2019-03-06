@@ -33,7 +33,11 @@ namespace Api
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            //SERVICES
             services.AddTransient<IRatesService, RatesService>();
+            services.AddTransient<ITransactionsService, TransactionsService>();
+
+            //REPOS
             services.AddTransient<IRepository<TransactionModel>, RepositoryTrans>();
             services.AddTransient<IRepository<RateModel>, RepositoryRates>();
 
