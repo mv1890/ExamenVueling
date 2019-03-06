@@ -3,9 +3,9 @@ using Data.Repository.Interfaces.Persistence;
 using Data.Repository.Models;
 using Domain.Helpers;
 using Domain.Services.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using static Domain.Helpers.ResultTypeHelper;
 
@@ -15,11 +15,13 @@ namespace Domain.Services
     {
         private readonly IRepository<RateModel> _repositoryRate;
         private readonly IRepositoryRateFile _repositoryRateFile;
+        private readonly ILogger _logger;
 
-        public RatesService(IRepository<RateModel> repositoryRate, IRepositoryRateFile repositoryRateFile)
+        public RatesService(IRepository<RateModel> repositoryRate, IRepositoryRateFile repositoryRateFile, ILogger<RatesService> logger)
         {
             _repositoryRate = repositoryRate;
             _repositoryRateFile = repositoryRateFile;
+            _logger = logger;
         }
 
         public async Task<ResponseHelper<List<RateModel>>> Get()
@@ -44,6 +46,7 @@ namespace Domain.Services
             {
                 response.ResponseH.Result = ResultMsg.Exception;
                 response.ResponseH.ErrText = ex.Message;
+                _logger.LogWarning(DateTime.Now.ToString() + "[" + nameof(RatesService) + "].[" + nameof(Get) + "]: " + ex.Message, ex);
                 return await Task.FromResult(response);
             }
         }

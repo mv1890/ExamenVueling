@@ -34,6 +34,9 @@ namespace Api
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            //LOGS
+            services.AddLogging();
+
             //SERVICES
             services.AddTransient<IRatesService, RatesService>();
             services.AddTransient<ITransactionsService, TransactionsService>();
@@ -50,7 +53,7 @@ namespace Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory logger)
         {
             if (env.IsDevelopment())
             {
@@ -63,6 +66,7 @@ namespace Api
 
             app.UseHttpsRedirection();
             app.UseMvc();
+            logger.AddFile("Logs/log.txt");
         }
     }
 }
