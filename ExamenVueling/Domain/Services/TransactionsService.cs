@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using static Data.Utils.Utils;
 using static Domain.Helpers.ResultTypeHelper;
@@ -46,16 +45,15 @@ namespace Domain.Services
                     ErrText = ""
                 };
                 response.DataH = listTransaction;
-
-                //FILE
+                
                 if (listTransaction == null && listRate == null)
                 {
                     listRate = await _repositoryRateFile.Read();
                     listTransaction = await _repositoryTransFile.Read();
                 }
-                
-                _repositoryTransFile.Save(listTransaction);
-                _repositoryRateFile.Save(listRate);
+
+                await _repositoryTransFile.Save(listTransaction);
+                await _repositoryRateFile.Save(listRate);
 
                 return await Task.FromResult(response);
             }
@@ -63,7 +61,7 @@ namespace Domain.Services
             {
                 response.ResponseH.Result = ResultMsg.Exception;
                 response.ResponseH.ErrText = ex.Message;
-                _logger.LogWarning(DateTime.Now.ToString() + "[" + nameof(TransactionsService) + "].[" + nameof(Get) + "]: " + ex.Message, ex);
+                _logger.LogWarning(DateTime.Now.ToString() + "[" + nameof(TransactionsService) + "]-[" + nameof(Get) + "]: " + ex.Message, ex);
                 return await Task.FromResult(response);
             }
         }
@@ -73,15 +71,16 @@ namespace Domain.Services
             var response = new ResponseHelper<TransHelper>();
             try
             {
-                string coin = "";
+                CurrencyCalc cC = new CurrencyCalc();
+                double totalAmount = 0;
+                List<TransactionModel> listTransFinal = new List<TransactionModel>();
+                List<string> listCoins = new List<string>();
                 //API
-                var listRates = await _repositoryRate.Get();
-                var listTransactions = await _repositoryTransaction.Get();
-                
+                Get();
+
                 //FILE
                 var listRate = await _repositoryRateFile.Read();
                 var listTransaction = await _repositoryTransFile.Read();
-
                 var listTransBySku = listTransaction.Where(x => x.Sku == sku);
                 var listFrom = listRate.Select(x => x.From);//FROM
                 var listTo = listRate.Select(y => y.To);//TO
@@ -89,19 +88,14 @@ namespace Domain.Services
                 
                 foreach (var item in listFull)
                 {
-                    coin = coin + item + "*";
+                    listCoins.Add(item);
                 }
-
-                CurrencyCalc cC = new CurrencyCalc();
-                cC.AddCoin(coin);
-
+                cC.AddCoin(listCoins);
                 foreach (var item in listRate)
                 {
                     cC.AddWay(item.From, item.To, Convert.ToSingle(item.Rate));
                 }
-                var cuenta = listFull.Count();
-                List<TransactionModel> listaFinal = new List<TransactionModel>();
-                double totalAmount = 0;
+                
                 foreach (var item in listTransBySku)
                 {
                     TransactionModel tran = new TransactionModel
@@ -109,35 +103,33 @@ namespace Domain.Services
                         Currency = "EUR",
                         Sku = item.Sku
                     };
-                    var numero = Convert.ToSingle(item.Amount);
-                    var resultado = cC.Dijkstra(item.Currency, listFull.Count(), "EUR");
-                    tran.Amount = Math.Round((numero * resultado), 2);
-                    totalAmount += (numero * resultado);
-                    listaFinal.Add(tran);
+                    var num = Convert.ToSingle(item.Amount);
+                    var dijkstra = cC.Dijkstra("EUR", item.Currency, listFull.Count());
+                    tran.Amount = Math.Round((num * dijkstra), 2);
+                    totalAmount += (num * dijkstra);
+                    listTransFinal.Add(tran);
                 }
-                TransHelper respuesta = new TransHelper
-                {
-                    TotalAmount = Math.Round(totalAmount, 2),
-                    ListTrans = listaFinal
-                };
+                    TransHelper finalResponse = new TransHelper
+                    {
+                        TotalAmount = Math.Round(totalAmount, 2),
+                        Current = "€",
+                        ListTrans = listTransFinal
+                    };
                 response.ResponseH = new ResultHelper
                 {
                     Result = ResultMsg.OK,
                     ErrText = ""
                 };
-                response.DataH = respuesta;
-
+                response.DataH = finalResponse;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
                 response.ResponseH.Result = ResultMsg.Exception;
                 response.ResponseH.ErrText = ex.Message;
-                _logger.LogWarning(DateTime.Now.ToString() + "[" + nameof(TransactionsService) + "].[" + nameof(GetTransactionsBySku) + "]: " + ex.Message, ex);
-
+                _logger.LogWarning(DateTime.Now.ToString() + "[" + nameof(TransactionsService) + "]-[" + nameof(GetTransactionsBySku) + "]: " + ex.Message, ex);
                 return await Task.FromResult(response);
             }
         }
-        
     }
 }

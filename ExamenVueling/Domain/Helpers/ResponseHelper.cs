@@ -7,7 +7,6 @@ namespace Domain.Helpers
     public class ResponseHelper<T>
     {
         public T DataH { get; set; }
-        public List<T> ListDataH { get; set; }
         public ResultHelper ResponseH { get; set; }
     }
 

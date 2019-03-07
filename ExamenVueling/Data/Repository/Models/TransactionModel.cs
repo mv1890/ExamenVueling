@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Data.Repository.Models
+﻿namespace Data.Repository.Models
 {
     public class TransactionModel
     {

@@ -28,7 +28,6 @@ namespace Data.Repository
             using (StreamReader r = new StreamReader(_path))
             {
                 string json = r.ReadToEnd();
-                //RateModel rate = JsonConvert.DeserializeObject<RateModel>(json);
                 List<TransactionModel> listTrans = JsonConvert.DeserializeObject<List<TransactionModel>>(json);
                 return listTrans;
             }

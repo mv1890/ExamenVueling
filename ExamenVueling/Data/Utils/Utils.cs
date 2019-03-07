@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Data.Utils
 {
@@ -8,12 +7,17 @@ namespace Data.Utils
     {
         public class CurrencyCalc
         {
-            
-
-            public string[] CoinNodes;
+            public List<string> CoinNodes;
             public double[,] MainGraph;
 
-            public double Dijkstra(string source, int verticesCount, string destination)
+            //CREAR GRAFO
+            public void AddCoin(List<string> coins)
+            {
+                CoinNodes = coins;
+                MainGraph = new double[coins.Count, coins.Count];
+            }
+
+            public double Dijkstra(string destination, string source, int verticesCount)
             {
                 double[] distance = new double[verticesCount];
                 bool[] shortestPath = new bool[verticesCount];
@@ -44,7 +48,7 @@ namespace Data.Utils
                     }
                 return dist;
             }
-
+            
             private static int SearchMinimumDistance(double[] distance, bool[] shortestPathTreeSet, int verticesCount)
             {
                 double min = int.MaxValue;
@@ -61,6 +65,15 @@ namespace Data.Utils
                 return minIndex;
             }
             
+            private int LocationNode(string nodo)
+            {
+                for (int i = 0; i < CoinNodes.Count; i++)
+                {
+                    if (CoinNodes[i] == nodo) return i;
+                }
+                return -1;
+            }
+
             public void AddWay(string origen, string destino, float distancia)
             {
                 int n1 = LocationNode(origen);
@@ -68,25 +81,6 @@ namespace Data.Utils
                 MainGraph[n1, n2] = distancia;
                 MainGraph[n2, n1] = distancia;
             }
-            
-            private int LocationNode(string nodo)
-            {
-                for (int i = 0; i < CoinNodes.Length; i++)
-                {
-                    if (CoinNodes[i] == nodo) return i;
-                }
-                return -1;
-            }
-            
-            public void AddCoin(string coins)
-            {
-                coins = coins.TrimEnd('*');
-                CoinNodes = coins.Split("*");
-                MainGraph = new double[CoinNodes.Length, CoinNodes.Length];
-            }
         }
-
-
-
     }
 }
