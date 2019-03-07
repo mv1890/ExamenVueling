@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Data.Repository.Interfaces.Persistence
 {
-    public interface IRepositoryRateFile : IRepositoryFile<RateModel>
+    public interface IRepositoryRateFile : IRepositoryFile<RateModel>,  IRepositoryFileWriter<RateModel>, IRepositoryFileReader<RateModel>
     {
     }
 }

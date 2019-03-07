@@ -15,6 +15,7 @@ namespace XUnitTestProject
         {
             var mock = new Mock<IRepositoryRate>();
             mock.Setup(p => p.Get()).Returns(GetTestSessions());
+
             Assert.IsType<List<RateModel>>(mock.Object.Get().Result);
         }
 

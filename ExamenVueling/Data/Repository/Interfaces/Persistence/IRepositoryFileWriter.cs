@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace Data.Repository.Interfaces.Persistence
 {
-    public interface IRepositoryFile<T>
+    public interface IRepositoryFileWriter<T>
     {
-        
-       
+        Task Save(List<T> list);
     }
 }

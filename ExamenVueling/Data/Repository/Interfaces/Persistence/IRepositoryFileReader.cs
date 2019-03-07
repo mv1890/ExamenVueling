@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace Data.Repository.Interfaces.Persistence
 {
-    public interface IRepositoryFile<T>
+    public interface IRepositoryFileReader<T>
     {
-        
-       
+        Task<List<T>> Read();
     }
 }

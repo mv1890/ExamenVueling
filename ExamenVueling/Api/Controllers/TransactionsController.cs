@@ -31,7 +31,6 @@ namespace Api.Controllers
                     Content = new StringContent(response.ResponseH.ErrText)
                 };
                 return BadRequest(message);
-
             }
             else
             {
@@ -39,6 +38,7 @@ namespace Api.Controllers
             }
         }
 
+        //DEVUELVE TRANSACCIONES CON UN SKU
         [HttpGet]
         [Route("{sku}", Name = "GetTransBySku")]
         public async Task<IActionResult> GetTransactionsBySku(string sku)
@@ -51,7 +51,6 @@ namespace Api.Controllers
                     Content = new StringContent(response.ResponseH.ErrText)
                 };
                 return BadRequest(message);
-
             }
             else
             {

@@ -6,8 +6,10 @@ using Domain.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Data.Utils.Utils;
 using static Domain.Helpers.ResultTypeHelper;
 
 namespace Domain.Services
@@ -45,6 +47,13 @@ namespace Domain.Services
                 };
                 response.DataH = listTransaction;
 
+                //FILE
+                if (listTransaction == null && listRate == null)
+                {
+                    listRate = await _repositoryRateFile.Read();
+                    listTransaction = await _repositoryTransFile.Read();
+                }
+                
                 _repositoryTransFile.Save(listTransaction);
                 _repositoryRateFile.Save(listRate);
 
@@ -59,9 +68,76 @@ namespace Domain.Services
             }
         }
 
-        public Task<ResponseHelper<TransHelper>> GetTransactionsBySku(string sku)
+        public async Task<ResponseHelper<TransHelper>> GetTransactionsBySku(string sku)
         {
-            throw new NotImplementedException();
+            var response = new ResponseHelper<TransHelper>();
+            try
+            {
+                string coin = "";
+                //API
+                var listRates = await _repositoryRate.Get();
+                var listTransactions = await _repositoryTransaction.Get();
+                
+                //FILE
+                var listRate = await _repositoryRateFile.Read();
+                var listTransaction = await _repositoryTransFile.Read();
+
+                var listTransBySku = listTransaction.Where(x => x.Sku == sku);
+                var listFrom = listRate.Select(x => x.From);//FROM
+                var listTo = listRate.Select(y => y.To);//TO
+                var listFull = listFrom.Union(listTo).Distinct();
+                
+                foreach (var item in listFull)
+                {
+                    coin = coin + item + "*";
+                }
+
+                CurrencyCalc cC = new CurrencyCalc();
+                cC.AddCoin(coin);
+
+                foreach (var item in listRate)
+                {
+                    cC.AddWay(item.From, item.To, Convert.ToSingle(item.Rate));
+                }
+                var cuenta = listFull.Count();
+                List<TransactionModel> listaFinal = new List<TransactionModel>();
+                double totalAmount = 0;
+                foreach (var item in listTransBySku)
+                {
+                    TransactionModel tran = new TransactionModel
+                    {
+                        Currency = "EUR",
+                        Sku = item.Sku
+                    };
+                    var numero = Convert.ToSingle(item.Amount);
+                    var resultado = cC.Dijkstra(item.Currency, listFull.Count(), "EUR");
+                    tran.Amount = Math.Round((numero * resultado), 2);
+                    totalAmount += (numero * resultado);
+                    listaFinal.Add(tran);
+                }
+                TransHelper respuesta = new TransHelper
+                {
+                    TotalAmount = Math.Round(totalAmount, 2),
+                    ListTrans = listaFinal
+                };
+                response.ResponseH = new ResultHelper
+                {
+                    Result = ResultMsg.OK,
+                    ErrText = ""
+                };
+                response.DataH = respuesta;
+
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                response.ResponseH.Result = ResultMsg.Exception;
+                response.ResponseH.ErrText = ex.Message;
+                _logger.LogWarning(DateTime.Now.ToString() + "[" + nameof(TransactionsService) + "].[" + nameof(GetTransactionsBySku) + "]: " + ex.Message, ex);
+
+                return await Task.FromResult(response);
+            }
         }
+        
     }
 }
